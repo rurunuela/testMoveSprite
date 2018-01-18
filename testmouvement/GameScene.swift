@@ -19,6 +19,14 @@ class GameScene: SKScene {
     private var mplayer : SKSpriteNode?
     var predlocation : CGPoint?
     var predlocation2 : CGPoint?
+    
+    
+    //Swipe
+     let swipeR = UISwipeGestureRecognizer()
+    let swipeL = UISwipeGestureRecognizer()
+    //rotate
+    @objc let rotate = UIRotationGestureRecognizer()
+    
     override func didMove(to view: SKView) {
         
         // Get label node from scene and store it for use later
@@ -35,9 +43,40 @@ class GameScene: SKScene {
         printInfo()
         
         
+        swipeR.addTarget(self, action: #selector(GameScene.swipedR))
+        swipeR.direction = .right
+        self.view?.addGestureRecognizer(swipeR)
+        rotate.addTarget(self, action: #selector(GameScene.rotated))
+        self.view?.addGestureRecognizer(rotate)
+        
+        
     }
-    
-  
+    //MARK: ==================== swipe And rotate
+    @objc func rotated(sender :UIRotationGestureRecognizer ){
+        debugPrint("--> rotate \(sender.rotation)")
+        predlocation =  nil
+        predlocation2 =  nil
+        switch sender.state {
+        case .began:
+            break
+        case .changed:
+            let rotateAmount = (Measurement(value: Double(sender.rotation), unit: UnitAngle.degrees))
+            mplayer?.zRotation = -sender.rotation
+            
+            break
+        case .ended:
+            break
+        default:
+            break
+            
+        }
+    }
+    @objc func swipedR(sender :UISwipeGestureRecognizer ){
+        let translation = sender.location(in: self.view)
+        print(" vers la  droite \(sender.state) \(translation)" )
+        predlocation =  nil
+        predlocation2 =  nil
+    }
 
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -73,7 +112,7 @@ class GameScene: SKScene {
                 fond?.position.y = (fond?.position.y)! + location.y - (predlocation?.y)!
                 
             }
-            printInfo()
+            //printInfo()
             predlocation = location
             predlocation2 = location2
         }
